@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<!--    <item-->
+<!--        android:id="@+id/nav_language"-->
+<!--        android:title="@string/language"-->
+<!--        android:icon="@drawable/ic_baseline_language_24"-->
+
+<!--        />-->
+<!--    <item-->
+<!--        android:id="@+id/search_action"-->
+<!--        android:icon="@drawable/ic_baseline_search_24"-->
+<!--        app:showAsAction="always|collapseActionView"-->
+<!--        app:actionViewClass="androidx.appcompat.widget.SearchView"-->
+<!--        android:visible="false"-->
+<!--        android:title="Search"/>-->
+<!--    <item-->
+<!--        android:id="@+id/action_three"-->
+<!--        android:title="Item Three"/>-->
+</menu>

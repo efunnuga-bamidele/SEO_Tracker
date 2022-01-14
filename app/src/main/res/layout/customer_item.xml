@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    android:id="@+id/cnvCardView"
+    app:cardCornerRadius="10dp"
+    android:backgroundTint="@color/btnInfo">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#fff"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:padding="10dp"
+            android:src="@drawable/img_4" />
+
+        <TextView
+            android:id="@+id/cvId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif"
+            android:text="id"
+            android:textColor="@color/btnDanger"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/cvCustomerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cvId"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/imageView"
+            android:layout_toStartOf="@id/myButton"
+            android:layout_toEndOf="@id/imageView"
+            android:fontFamily="sans-serif"
+            android:text="Sample Customer Name"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/myButton"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:clickable="true"
+            android:text="Edit"
+            android:textAllCaps="false"
+            android:textColor="#fff" />
+
+
+    </RelativeLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

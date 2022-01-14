@@ -1,0 +1,117 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+//    id 'kotlin-parcelize'
+
+}
+
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.bjtmtech.seotracker"
+        minSdk 19
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures{
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+
+
+//    def lifecycle_version = "2.3.0"
+    def nav_version = '2.3.5'
+    def recyclerview_version = '1.2.1'
+    def material_version = '1.6.0-alpha01'
+
+    // ViewModel
+//    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    // LiveData
+//    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
+    // recyclerview
+    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
+
+    // material
+    implementation "com.google.android.material:material:$material_version"
+
+    //Add the library in app gradle
+    implementation 'com.android.support:multidex:1.0.3'
+
+//FancyToast-Android
+//    implementation 'com.github.Shashank02051997:FancyToast-Android:0.1.6'
+    implementation 'io.github.shashank02051997:FancyToast:2.0.1'
+////Add this to the default config in the app gradle
+    implementation("androidx.constraintlayout:constraintlayout:2.1.2") //enable responsive view
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-database:20.0.3'
+    implementation 'com.google.firebase:protolite-well-known-types:18.0.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+//     Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+
+    // Declare the dependency for the Realtime Database library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+//    implementation 'com.google.firebase:firebase-database-ktx'
+
+// Declare the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+    // Also declare the dependency for the Google Play services library and specify its version
+    implementation 'com.google.android.gms:play-services-auth:20.0.1'
+
+    implementation 'de.hdodenhof:circleimageview:3.1.0' //modified
+    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation('androidx.fragment:fragment-ktx:1.4.0')
+
+    // Declare the dependency for the Cloud Firestore library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+
+}

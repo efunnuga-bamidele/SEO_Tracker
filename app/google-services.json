@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "410703631677",
+    "firebase_url": "https://engineer-job-tracker-default-rtdb.firebaseio.com",
+    "project_id": "engineer-job-tracker",
+    "storage_bucket": "engineer-job-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410703631677:android:ec174a941ba114e3b46154",
+        "android_client_info": {
+          "package_name": "com.bjtmtech.seotracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410703631677-0lo11a8iondfkl3vbenia2j3udithrvs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdhdluIcY2BAvSaDKrAMW7Vb-q_TGHRzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410703631677-0lo11a8iondfkl3vbenia2j3udithrvs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410703631677:android:54b6c357ff2ac425b46154",
+        "android_client_info": {
+          "package_name": "com.bjtmtech.servicejobtracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410703631677-0lo11a8iondfkl3vbenia2j3udithrvs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdhdluIcY2BAvSaDKrAMW7Vb-q_TGHRzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410703631677-0lo11a8iondfkl3vbenia2j3udithrvs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

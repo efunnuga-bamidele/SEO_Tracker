@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">SEO Tracker</string>
+    <string name="username">Default Username</string>
+    <string name="useremail">defaultusername@mail.com</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <!--    Nav items-->
+    <string name="dashboard">Dashboard</string>
+    <string name="create_job">Create Job</string>
+    <string name="view_active_job">View Active Job</string>
+    <string name="job_history">Engineers Job History</string>
+    <!--  Nav items Settings-->
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <!--  Nav items Settings-->
+    <string name="jobtype">Job Type</string>
+    <string name="language">Language</string>
+
+    <!--  Nav items Admin Settings-->
+    <string name="manageusers">Manage Users</string>
+    <string name="customers">Manage Customers</string>
+    <string name="occupancy">Occupancy Report</string>
+    <string name="managedb">Manage Database</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_customer_visit">Total Customer Visited</string>
+
+    <string name="addedHistory">History has been added successfully!</string>
+    <string name="error">%1$s</string>
+<!--    <string name="error">History has been added successfully!</string>-->
+
+    <string-array name="customers">
+        <item>Nigerite</item>
+        <item>Nestle</item>
+        <item>Coca cola</item>
+        <item>Strong Pack</item>
+        <item>ABInbev</item>
+    </string-array>
+
+</resources>

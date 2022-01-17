@@ -17,9 +17,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-<!--        <de.hdodenhof.circleimageview.CircleImageView-->
+        <!--        <de.hdodenhof.circleimageview.CircleImageView-->
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="60dp"
@@ -31,11 +33,14 @@
             android:id="@+id/text_view_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
             android:fontFamily="sans-serif-light"
             android:text="Document Name"
-            android:layout_toRightOf="@+id/imageView"
-            android:layout_marginLeft="20dp"
-            android:layout_margin="4dp"
             android:textColor="@color/colorPurple"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -45,10 +50,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_view_name"
-            android:fontFamily="sans-serif-light"
-            android:layout_toRightOf="@+id/imageView"
+            android:layout_marginStart="4dp"
             android:layout_marginLeft="20dp"
-            android:layout_margin="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
             android:text="Company Name [2010.02.11 - 2010.02.19"
             android:textColor="#000000"
             android:textSize="16sp" />

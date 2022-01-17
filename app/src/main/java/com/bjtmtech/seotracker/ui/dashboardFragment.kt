@@ -98,8 +98,8 @@ class dashboardFragment : Fragment() {
 
         EventChangeListener()
 
-        val itemTouchHelper = ItemTouchHelper(simpleCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerViewData)
+//        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+//        itemTouchHelper.attachToRecyclerView(recyclerViewData)
 
 //        isOnline(context!!)
 
@@ -214,17 +214,17 @@ class dashboardFragment : Fragment() {
         return false
     }
 
-    private var simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            return true
-        }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//            TODO("Not yet implemented")
-        }
-    }
+//    private var simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+//        override fun onMove(
+//            recyclerView: RecyclerView,
+//            viewHolder: RecyclerView.ViewHolder,
+//            target: RecyclerView.ViewHolder
+//        ): Boolean {
+//            return true
+//        }
+//
+//        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+////            TODO("Not yet implemented")
+//        }
+//    }
 }

@@ -17,6 +17,7 @@ class MyAdapterDashboard (private val engineerProfileList : MutableList<ServiceE
 
     interface onItemClickListener {
         fun onItemClick(position: Int)
+
     }
 
     fun setOnItemClickListener(listener: onItemClickListener) {
@@ -37,9 +38,9 @@ class MyAdapterDashboard (private val engineerProfileList : MutableList<ServiceE
     override fun onBindViewHolder(holder: MyAdapterDashboard.MyDashHolder, position: Int) {
         val engineersProfile: ServiceEngineerData = engineerProfileList[position]
 
-        holder.engineerName.text = engineersProfile.firstName.toString()+" "+engineersProfile.lastName.toString()
-        holder.engineerCountry.text = engineersProfile.country.toString()
-        holder.engineerTitle.text = engineersProfile.jobTitle.toString()
+        holder.engineerName.text = engineersProfile.firstName.toString().capitalize()+" "+engineersProfile.lastName.toString().capitalize()
+        holder.engineerCountry.text = engineersProfile.country.toString().capitalize()
+        holder.engineerTitle.text = engineersProfile.jobTitle.toString().capitalize()
         holder.engineerEmail.text = engineersProfile.email.toString()
         holder.dateText.text = startYear.toString()
 

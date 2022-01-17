@@ -1,5 +1,6 @@
 package com.bjtmtech.seotracker
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -26,8 +27,13 @@ import kotlinx.android.synthetic.main.fragment_job_history.*
 import java.io.IOException
 import kotlin.collections.ArrayList
 import android.view.MenuInflater
+import android.widget.ArrayAdapter
+import android.widget.CompoundButton
 import androidx.appcompat.widget.SearchView
+import androidx.compose.ui.text.capitalize
+import com.bjtmtech.seotracker.data.ServiceEngineerData
 import com.bjtmtech.seotracker.ui.ViewJobsHistoryFragment
+import kotlinx.android.synthetic.main.activity_register.*
 import java.util.*
 
 //import android.widget.SearchView
@@ -43,10 +49,12 @@ class jobHistoryFragment : Fragment() {
     lateinit var  heading : Array<String>
     private lateinit var  myAdapterHistory : MyJobHistoryAdapter
 
-    private lateinit var engineerEmailQuery : String
     private lateinit var sharedPref : SharedPreferences
     private var PRIVATE_MODE = 0
     private lateinit var searchArrayList: ArrayList<JobHistoryData>
+
+    var userCountry : String ?= null
+    var userEmail : String ?= null
 //    lateinit var menuInflator : MenuInflater
 
 
@@ -120,56 +128,130 @@ class jobHistoryFragment : Fragment() {
         //        set sharedpreference to get email of user
         sharedPref = context!!.getSharedPreferences("myProfile", PRIVATE_MODE)
 //        create variable to collect the email address
-        engineerEmailQuery = sharedPref.getString("email", "defaultemail@mail.com").toString()
-        setup()
-
-        recyclerViewHistory = jhvRecyclerView
-
-        recyclerViewHistory.layoutManager = LinearLayoutManager(context)
-        recyclerViewHistory.setHasFixedSize(true)
-
-        jobsHistoryList = arrayListOf()
-        searchArrayList = arrayListOf()
-//        Toast.makeText(context, jobsHistoryList.toString(), Toast.LENGTH_SHORT).show()
-
-//        myAdapterHistory = MyJobHistoryAdapter(jobsHistoryList)
-        myAdapterHistory = MyJobHistoryAdapter(searchArrayList)
-
-
-        recyclerViewHistory.adapter = myAdapterHistory
-
-        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener{
-            override fun onItemClick(position: Int) {
-//                Toast.makeText(context, "You clicked item "+position, Toast.LENGTH_SHORT).show()
-//                ViewJobsHistoryFragment().show(childFragmentManager, "View")
-                val args = Bundle()
-                args.putString("key", position.toString())
-                args.putString("action", "Clicked")
-                val fm: FragmentManager = activity!!.supportFragmentManager
-                val overlay = ViewJobsHistoryFragment()
-                overlay.setArguments(args)
-                overlay.show(fm, "FragmentDialog")
-
-            }
-
-        })
-
+        userEmail = sharedPref.getString("email", "defaultemail@mail.com").toString()
+//        setup()
+//
+//        recyclerViewHistory = jhvRecyclerView
+//
+//        recyclerViewHistory.layoutManager = LinearLayoutManager(context)
+//        recyclerViewHistory.setHasFixedSize(true)
+//
+//        jobsHistoryList = arrayListOf()
+//        searchArrayList = arrayListOf()
+////        Toast.makeText(context, jobsHistoryList.toString(), Toast.LENGTH_SHORT).show()
+//
+////        myAdapterHistory = MyJobHistoryAdapter(jobsHistoryList)
+//        myAdapterHistory = MyJobHistoryAdapter(searchArrayList)
+//
+//
+//        recyclerViewHistory.adapter = myAdapterHistory
+//
+//        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener{
+//            override fun onItemClick(position: Int) {
+////                Toast.makeText(context, "You clicked item "+position, Toast.LENGTH_SHORT).show()
+////                ViewJobsHistoryFragment().show(childFragmentManager, "View")
+//                val args = Bundle()
+//                args.putString("key", position.toString())
+//                args.putString("action", "Clicked")
+//                val fm: FragmentManager = activity!!.supportFragmentManager
+//                val overlay = ViewJobsHistoryFragment()
+//                overlay.setArguments(args)
+//                overlay.show(fm, "FragmentDialog")
+//
+//            }
+//
+//        })
+//
+//        EventChangeListener()
+//
+//        //Add Divider
+//        recyclerViewHistory.addItemDecoration(
+//            DividerItemDecoration(
+//                context,
+//                DividerItemDecoration.VERTICAL
+//            )
+//        )
         EventChangeListener()
+        //        Code to getting country list
 
-        //Add Divider
-        recyclerViewHistory.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
-            )
-        )
+        val countryNamesList = java.util.ArrayList<String>()
+        val countriesList: MutableList<String> = java.util.ArrayList()
+        val locales = Locale.getISOCountries()
+        for (countryCode in locales) {
+            val obj = Locale("", countryCode)
+            countriesList.add(obj.getDisplayCountry(Locale.ENGLISH))
+            Collections.sort(countriesList)
+        }
+        for (s in countriesList) {
+            countryNamesList.add(s)
+        }
 
+        val arrayAdapterCountry = ArrayAdapter(context!!,
+            R.layout.customer_name_dropdown_items, countryNamesList)
+        engineerCountry.setAdapter(arrayAdapterCountry)
 
-        //get item position on recycler view
-    val itemTouchHelper = ItemTouchHelper(simpleCallback)
-    itemTouchHelper.attachToRecyclerView(recyclerViewHistory)
+//
+
+//
+//        //get item position on recycler view
+//    val itemTouchHelper = ItemTouchHelper(simpleCallback)
+//    itemTouchHelper.attachToRecyclerView(recyclerViewHistory)
+
+        startDateFilterText.setOnClickListener {
+            FancyToast.makeText(context, "Got Click", FancyToast.LENGTH_SHORT, FancyToast.INFO, true).show()
+            startDateFilterText.setText("I got clicked")
+        }
 
         isOnline(context!!)
+
+        engineerNameCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (engineerNameCheckBox.isChecked){
+                TODO()
+            }else{
+                TODO()
+            }
+        })
+
+        countryCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (countryCheckBox.isChecked){
+                engineerCountry.isEnabled = true
+                textInputLayout3.isEnabled = true
+                engineerCountry.isClickable = true
+                textInputLayout3.isClickable = true
+            }else{
+                engineerCountry.isEnabled = false
+                textInputLayout3.isEnabled = false
+                engineerCountry.isClickable = false
+                textInputLayout3.isClickable = false
+            }
+        })
+
+        stopDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (stopDateCheckBox.isChecked){
+                stopDateFilter.isEnabled = true
+                stopDateFilterText.isEnabled = true
+                stopDateFilter.isClickable = true
+                stopDateFilterText.isClickable = true
+            }else{
+                stopDateFilter.isEnabled = false
+                stopDateFilterText.isEnabled = false
+                stopDateFilter.isClickable = false
+                stopDateFilterText.isClickable = false
+            }
+        })
+        startDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (startDateCheckBox.isChecked){
+                startDateFilterText.isEnabled = true
+                startDateFilter.isEnabled = true
+                startDateFilterText.isClickable = true
+                startDateFilter.isClickable = true
+            }else{
+                startDateFilterText.isEnabled = false
+                startDateFilter.isEnabled = false
+                startDateFilterText.isClickable = false
+                startDateFilter.isClickable = false
+            }
+        })
 
     }
 
@@ -182,34 +264,38 @@ class jobHistoryFragment : Fragment() {
     }
 
     private fun EventChangeListener() {
-        try {
-            db.collection("createdJobs").orderBy("createdDate", Query.Direction.DESCENDING)
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString())
-                .addSnapshotListener(object : EventListener<QuerySnapshot> {
-                    override fun onEvent(
-                        value: QuerySnapshot?,
-                        error: FirebaseFirestoreException?
-                    ) {
-                        if (error != null) {
-                            Log.e("Firebase Error: ", error.message.toString())
-                            return
-                        }
-                        for (dc: DocumentChange in value?.documentChanges!!) {
-                            if (dc.type == DocumentChange.Type.ADDED) {
-                                jobsHistoryList.add(dc.document.toObject(JobHistoryData::class.java))
 
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if (document.data["email"] == userEmail) {
+                        userCountry = document.data["country"].toString()
+                        FancyToast.makeText(
+                            context, "List of engineers for $userCountry",
+                            FancyToast.LENGTH_SHORT, FancyToast.INFO,
+                            true
+                        ).show()
+
+                        db.collection("users")
+                            .whereEqualTo("country", userCountry)
+                            .whereEqualTo("level", "User")
+                            .get()
+                            .addOnSuccessListener { result ->
+                                val engineerNamesList = java.util.ArrayList<String>()
+                                for (document in result) {
+                                    engineerNamesList.add(document.data["firstName"].toString().capitalize() + " " + document.data["lastName"].toString().capitalize())
+                                }
+                                val arrayAdapter = ArrayAdapter(context!!, R.layout.customer_name_dropdown_items, engineerNamesList)
+                                engineerNameText.setAdapter(arrayAdapter)
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.d(TAG, "Error getting documents: ", exception)
                             }
 
-                        }
-                        myAdapterHistory.notifyDataSetChanged()
-                        searchArrayList.addAll(jobsHistoryList)
                     }
-
-                })
-        }catch (e: IOException){
-            FancyToast.makeText(context, "Error while fetching data from database", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
-        }
-
+                }
+            }
     }
 
 //    Swipe listener event

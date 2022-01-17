@@ -5,38 +5,190 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.jobHistoryFragment">
+    tools:context=".jobHistoryFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/jhvRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <ScrollView
+            android:id="@+id/scrollView3"
+            android:layout_width="409dp"
+            android:layout_height="170dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Generate Job History"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startDateFilter" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stopDateFilter"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="false"
+                    android:enabled="false"
+                    app:layout_constraintBottom_toTopOf="@+id/button"
+                    app:layout_constraintEnd_toStartOf="@+id/stopDateCheckBox"
+                    app:layout_constraintStart_toEndOf="@+id/startDateFilter"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <com.google.android.material.textfield.TextInputEditText
+
+                        android:id="@+id/stopDateFilterText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:enabled="false"
+                        android:hint="Filter by Stop Date" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/startDateFilter"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:clickable="false"
+                    android:enabled="false"
+                    app:layout_constraintEnd_toStartOf="@+id/stopDateFilter"
+                    app:layout_constraintStart_toEndOf="@+id/startDateCheckBox"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/startDateFilterText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Filter by Start Date" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout3"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:enabled="false"
+                    app:layout_constraintEnd_toStartOf="@+id/countryCheckBox"
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout2"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/engineerCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Country" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout2"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintEnd_toStartOf="@+id/textInputLayout3"
+                    app:layout_constraintStart_toEndOf="@+id/engineerNameCheckBox"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/engineerNameText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Engineer Name" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <CheckBox
+                    android:id="@+id/engineerNameCheckBox"
+                    android:layout_width="34dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="2dp"
+                    android:checked="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <CheckBox
+                    android:id="@+id/countryCheckBox"
+                    android:layout_width="34dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="2dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/startDateCheckBox"
+                    android:layout_width="34dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/engineerNameCheckBox"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <CheckBox
+                    android:id="@+id/stopDateCheckBox"
+                    android:layout_width="34dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/countryCheckBox" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/jhvRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="562dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider3"
             tools:ignore="SpeakableTextPresentCheck"
             tools:listitem="@layout/jobhistory_item" />
 
-        <Button
-            android:id="@+id/openDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Button"
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/jhvRecyclerView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<com.google.android.material.card.MaterialCardView
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,10 +9,10 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
+    android:checkable="true"
     android:foreground="?selectableItemBackground"
     android:id="@+id/dbCardView"
-    app:cardCornerRadius="10dp"
-    android:backgroundTint="@color/btnInfo"
+    android:elevation="5dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,8 +29,8 @@
 
         <ImageView
             android:id="@+id/userImage"
-            android:layout_width="66dp"
-            android:layout_height="177dp"
+            android:layout_width="65dp"
+            android:layout_height="143dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
@@ -42,7 +44,6 @@
             android:id="@+id/text_view_name"
             android:layout_width="287dp"
             android:layout_height="37dp"
-
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -51,7 +52,7 @@
             android:fontFamily="sans-serif-light"
             android:gravity="center_vertical"
             android:text="John Doe"
-            android:textColor="@color/black"
+            android:textColor="@color/btnPrimary"
             android:textSize="25sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/emailText"
@@ -69,9 +70,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_toRightOf="@+id/userImage"
-            android:fontFamily="sans-serif-light"
+            android:textColor="@color/black"
             android:text="Nigeria"
-            android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/countTxtView"
             app:layout_constraintStart_toEndOf="@+id/userImage"
@@ -86,9 +86,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_toRightOf="@+id/userImage"
-            android:fontFamily="sans-serif-light"
+            android:fontFamily="sans-serif"
             android:text="Service Engineer"
-            android:textColor="#000000"
+            android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/countDescription"
             app:layout_constraintStart_toEndOf="@+id/userImage"
@@ -103,10 +103,9 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:layout_toRightOf="@+id/userImage"
-            android:fontFamily="sans-serif-light"
             android:text="service@email.com"
-            android:textColor="#000000"
-            android:textSize="16sp"
+            android:textColor="@color/purple_700"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/userImage"
             app:layout_constraintTop_toBottomOf="@+id/text_view_name" />
@@ -121,14 +120,16 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:layout_toRightOf="@+id/userImage"
-            android:fontFamily="sans-serif-light"
             android:text="0000"
-            android:textColor="#000000"
+            android:textColor="@color/btnWarning"
             android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/countTxtView"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/userImage"
-            app:layout_constraintTop_toBottomOf="@+id/textCountry" />
+            app:layout_constraintTop_toBottomOf="@+id/textCountry"
+            app:layout_constraintVertical_bias="0.051" />
 
         <TextView
             android:id="@+id/countDescription"
@@ -139,16 +140,16 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:layout_toRightOf="@+id/text_view_name"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:text="Days worked"
-            android:textColor="@color/colorPurple"
+            android:gravity="right"
+            android:text="Worked Days"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="normal"
             app:layout_constraintBottom_toTopOf="@+id/countTxtView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/jotTitle"
-            app:layout_constraintTop_toBottomOf="@+id/emailText" />
+            app:layout_constraintTop_toBottomOf="@+id/emailText"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/countTxtView"
@@ -156,21 +157,22 @@
             android:layout_height="62dp"
             android:layout_below="@id/countDescription"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="3dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="3dp"
             android:layout_toRightOf="@+id/text_view_name"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
+            android:gravity="center|right|center_vertical"
             android:text="30"
             android:textColor="@color/colorPurple"
             android:textSize="34sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textCountry" />
+            app:layout_constraintStart_toEndOf="@+id/textCountry"
+            app:layout_constraintTop_toBottomOf="@+id/countDescription" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

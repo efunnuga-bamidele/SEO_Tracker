@@ -10,19 +10,43 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bjtmtech.seotracker.R
+import com.bjtmtech.seotracker.adapter.MyAdapterDashboard
+import com.bjtmtech.seotracker.data.JobHistoryData
+import com.bjtmtech.seotracker.data.ServiceEngineerData
+import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.shashank.sony.fancytoastlib.FancyToast
+import kotlinx.android.synthetic.main.dashboard_items.*
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import java.io.IOException
+import java.lang.Exception
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
 
 class dashboardFragment : Fragment() {
 
-    private var PRIVATE_MODE = 0
     val db = Firebase.firestore
+    private var dataSize: Int = 0
+    private lateinit var recyclerViewData: RecyclerView
+    private lateinit var engineerDataList: MutableList<ServiceEngineerData>
+    private lateinit var myAdapterEngineer: MyAdapterDashboard
+
+    var userCountry : String ?= null
+    var userEmail : String ?= null
+
+    private lateinit var sharedPref: SharedPreferences
+    private var PRIVATE_MODE = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -32,200 +56,60 @@ class dashboardFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val sharedPref: SharedPreferences = requireContext().getSharedPreferences("myProfile", PRIVATE_MODE)
-        val engineerEmailQuery = sharedPref.getString("email" , "defaultemail@mail.com" ).toString()
-
-        val sdf = SimpleDateFormat("MMMM dd, yyyy")
-        val sdfy = SimpleDateFormat("yyyy")
-        val sdfm = SimpleDateFormat("MM") //Number representations
-        val timestamp = Timestamp(System.currentTimeMillis())
-        val currentYear = sdfy.format(timestamp).toString()
-        val currentDate = sdf.format(timestamp).toString()
-
-//        Active Jobs
-        try {
-            db.collection("createdJobs")
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("jobStatus", "ACTIVE")
-                .whereEqualTo("createdYear", currentYear)
-
-                .get()
-                .addOnSuccessListener { documents ->
-
-                    dbActiveCounter.setText(documents.size().toString())
+//        val sharedPref: SharedPreferences =
+//            requireContext().getSharedPreferences("myProfile", PRIVATE_MODE)
+//        val engineerEmailQuery = sharedPref.getString("email", "defaultemail@mail.com").toString()
 
 
 
-                }
-                .addOnFailureListener { exception ->
-                    dbActiveCounter.setText("0")
-//                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        }catch (e:IOException){
-
-        }
-        activeJobLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Active Jobs : ${dbActiveCounter.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Active Jobs : ${dbActiveCounter.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
-
-        //        Completed Jobs
-        try {
-            db.collection("createdJobs")
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("jobStatus", "COMPLETED",)
-                .whereEqualTo("createdYear", currentYear,)
-                .get()
-                .addOnSuccessListener { documents ->
-
-                    dbCompletedCounter.setText(documents.size().toString())
-
-
-                }
-                .addOnFailureListener { exception ->
-                    dbCompletedCounter.setText("0")
-                }
-        }catch (e:IOException){
-
-        }
-
-
-        completedJobsLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Completed Jobs : ${dbCompletedCounter.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Completed Jobs : ${dbCompletedCounter.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
-
-        //        Canceled Jobs
-        try {
-            db.collection("createdJobs")
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("jobStatus", "CANCELED",)
-                .whereEqualTo("createdYear", currentYear,)
-
-                .get()
-                .addOnSuccessListener { documents ->
-
-                    dbCanceledCounter.setText(documents.size().toString())
-
-
-
-                }
-                .addOnFailureListener { exception ->
-                    dbCanceledCounter.setText("0")
-                }
-        }catch (e:IOException){
-
-        }
-
-        canceledJobsLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Canceled Jobs : ${dbCanceledCounter.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Canceled Jobs : ${dbCanceledCounter.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
-
-        //        Pending Jobs
-        try {
-            db.collection("createdJobs")
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("jobStatus", "PENDING",)
-                .whereEqualTo("createdYear", currentYear,)
-
-                .get()
-                .addOnSuccessListener { documents ->
-
-                    dbPendingCounter.setText(documents.size().toString())
-
-
-
-                }
-                .addOnFailureListener { exception ->
-                    dbPendingCounter.setText("0")
-                }
-        }catch (e:IOException){
-
-        }
-
-        pendingJobsLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Pending Jobs : ${dbPendingCounter.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Pending Jobs : ${dbPendingCounter.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
-//        Days Worked
-        try {
-            var duration : Int = 0
-            db.collection("createdJobs")
-
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("jobStatus", "COMPLETED",)
-                .whereEqualTo("createdYear", currentYear,)
-                .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        duration += document.data["jobDuration"].toString().toInt()
-                    }
-
-                    dbWorkedDays.setText(duration.toString())
-
-
-
-
-                }
-                .addOnFailureListener { exception ->
-                    dbWorkedDays.setText("0")
-//                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        }catch (e:IOException){
-
-        }
-
-        workDaysLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Worked Days : ${dbWorkedDays.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Worked Days : ${dbWorkedDays.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
-
-        //        Site Visited
-        try {
-            var siteVisited : Int = 0
-            db.collection("createdJobs")
-
-                .whereEqualTo("engineerEmail", engineerEmailQuery.toString()).whereEqualTo("createdYear", currentYear,).whereEqualTo("jobStatus", "COMPLETED",)
-                .get()
-                .addOnSuccessListener { documents ->
-
-                    dbCustomerVisited.setText(documents.size().toString())
-
-
-
-
-                }
-                .addOnFailureListener { exception ->
-                    dbCustomerVisited.setText("0")
-//                Log.w(ContentValues.TAG, "Error getting documents: ", exception)
-                }
-        }catch (e:IOException){
-
-        }
-
-        customerVisitLayout.setOnClickListener {
-//            Toast.makeText(context, "Total Customer Visits : ${dbCustomerVisited.text.toString()} \n Job Year :  $currentYear" +
-//                    "\n Current date : $currentDate", Toast.LENGTH_LONG).show()
-            FancyToast.makeText(context,"Total Customer Visits : ${dbCustomerVisited.text.toString()} \n Job Year :  $currentYear" +
-                    "\n Current date : $currentDate",FancyToast.LENGTH_LONG,FancyToast.DEFAULT,true).show()
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val sharedPref: SharedPreferences =
+            requireContext().getSharedPreferences("myProfile", PRIVATE_MODE)
+        userEmail = sharedPref.getString("email", "defaultemail@mail.com").toString()
+        recyclerViewData = dbRecyclerView
+
+        recyclerViewData.layoutManager = LinearLayoutManager(context)
+        recyclerViewData.setHasFixedSize(true)
+
+        engineerDataList = arrayListOf()
+
+        myAdapterEngineer = MyAdapterDashboard(engineerDataList)
+
+        recyclerViewData.adapter = myAdapterEngineer
+
+        myAdapterEngineer.setOnItemClickListener(object : MyAdapterDashboard.onItemClickListener {
+            override fun onItemClick(position: Int) {
+                Toast.makeText(context, "You clicked item " + position, Toast.LENGTH_SHORT).show()
+            }
+
+        })
 
 
+        //Add Divider
+        recyclerViewData.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        EventChangeListener()
+
+        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerViewData)
+
+//        isOnline(context!!)
 
 
         isOnline(requireContext())
 
+
+
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -235,6 +119,65 @@ class dashboardFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_dashboard, container, false)
     }
+
+    private fun EventChangeListener() {
+        try {                db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for(document in result){
+                    if (document.data["email"] == userEmail){
+                        userCountry = document.data["country"].toString()
+                        FancyToast.makeText(
+                            context, "List of engineers for $userCountry",
+                            FancyToast.LENGTH_SHORT
+                            ,FancyToast.INFO,
+                        true
+                        ).show()
+
+                        db.collection("users")
+                            .whereEqualTo("country", userCountry)
+                            .whereEqualTo("level","User")
+                            .addSnapshotListener(object : EventListener<QuerySnapshot> {
+                                override fun onEvent(
+                                    value: QuerySnapshot?,
+                                    error: FirebaseFirestoreException?
+                                ) {
+                                    if (error != null) {
+                                        Log.e("Firebase Error: ", error.message.toString())
+                                        return
+                                    }
+                                    for (dc: DocumentChange in value?.documentChanges!!) {
+                                        if (dc.type == DocumentChange.Type.ADDED) {
+                                            engineerDataList.add(dc.document.toObject(ServiceEngineerData::class.java))
+
+                                        }
+
+                                    }
+
+                                    myAdapterEngineer.notifyDataSetChanged()
+
+//                        searchArrayList.addAll(jobsHistoryList)
+                                }
+
+                            })
+
+                    }
+
+                }
+            }
+
+        } catch (e: IOException) {
+            FancyToast.makeText(
+                context,
+                "Error while fetching data from database",
+                FancyToast.LENGTH_SHORT,
+                FancyToast.ERROR,
+                true
+            ).show()
+        }
+
+    }
+
 
     fun isOnline(context: Context): Boolean {
         val connectivityManager =
@@ -261,7 +204,27 @@ class dashboardFragment : Fragment() {
                 }
             }
         }
-        FancyToast.makeText(context, "Error checking internet connection!", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
+        FancyToast.makeText(
+            context,
+            "Error checking internet connection!",
+            FancyToast.LENGTH_SHORT,
+            FancyToast.ERROR,
+            true
+        ).show()
         return false
+    }
+
+    private var simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+//            TODO("Not yet implemented")
+        }
     }
 }

@@ -24,8 +24,8 @@
         <!--        <de.hdodenhof.circleimageview.CircleImageView-->
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="51dp"
+            android:layout_height="85dp"
             android:padding="10dp"
             android:src="@drawable/img_7" />
 
@@ -45,11 +45,47 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+
+        <TextView
+            android:id="@+id/text_view_customer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_name"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Customer Name"
+            android:textColor="@color/colorPurple"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_view_engineer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_customer"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Engineer Name"
+            android:textColor="@color/colorPurple"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+
         <TextView
             android:id="@+id/text_view_document"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text_view_name"
+            android:layout_below="@id/text_view_engineer"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="4dp"
@@ -57,7 +93,71 @@
             android:layout_marginBottom="4dp"
             android:layout_toRightOf="@+id/imageView"
             android:fontFamily="sans-serif-light"
-            android:text="Company Name [2010.02.11 - 2010.02.19"
+            android:text="Duration : 2010.02.11 - 2010.02.19"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_view_country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_document"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Job Country"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_view_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_country"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Job Status"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_view_Created"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_status"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Job Created"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/text_view_Durtion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_Created"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@+id/imageView"
+            android:fontFamily="sans-serif-light"
+            android:text="Job Duration"
             android:textColor="#000000"
             android:textSize="16sp" />
 

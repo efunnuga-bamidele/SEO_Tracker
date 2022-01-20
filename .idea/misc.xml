@@ -11,10 +11,11 @@
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/dashboard_items.xml" value="0.264" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/fragment_customers.xml" value="0.1875" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/fragment_dashboard.xml" value="0.2" />
-        <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/fragment_job_history.xml" value="0.18082788671023964" />
+        <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/fragment_job_history.xml" value="0.2" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/fragment_view_jobs_history.xml" value="0.1875" />
-        <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/jobhistory_item.xml" value="0.1875" />
+        <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/jobhistory_item.xml" value="0.33" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/jobtype_item.xml" value="0.1875" />
+        <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/loading_dialog.xml" value="0.271875" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/layout/recycler_view_item.xml" value="0.1875" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/SeoTracker/app/src/main/res/menu/nav_menu.xml" value="0.1875" />
         <entry key="..\:/Users/EBamidele/AndroidStudioProjects/ServiceJobTracker/app/src/main/res/drawable/background_top.xml" value="0.206640625" />

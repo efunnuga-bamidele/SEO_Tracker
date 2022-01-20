@@ -1,5 +1,6 @@
 package com.bjtmtech.seotracker.ui
 
+import LoadingDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -45,8 +47,15 @@ class dashboardFragment : Fragment() {
     var userCountry : String ?= null
     var userEmail : String ?= null
 
+//
+    private val calendar = Calendar.getInstance()
+    var engineerEmailQuery: String ?= null
+    var yearQuery: Int ?= calendar.get(Calendar.YEAR)
+
     private lateinit var sharedPref: SharedPreferences
     private var PRIVATE_MODE = 0
+    val loading = LoadingDialog(this)
+    val handle = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -82,7 +91,7 @@ class dashboardFragment : Fragment() {
 
         myAdapterEngineer.setOnItemClickListener(object : MyAdapterDashboard.onItemClickListener {
             override fun onItemClick(position: Int) {
-                Toast.makeText(context, "You clicked item " + position, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "You clicked item " + position, Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -97,12 +106,6 @@ class dashboardFragment : Fragment() {
         )
 
         EventChangeListener()
-
-//        val itemTouchHelper = ItemTouchHelper(simpleCallback)
-//        itemTouchHelper.attachToRecyclerView(recyclerViewData)
-
-//        isOnline(context!!)
-
 
         isOnline(requireContext())
 
@@ -121,7 +124,9 @@ class dashboardFragment : Fragment() {
     }
 
     private fun EventChangeListener() {
-        try {                db.collection("users")
+        try {
+            loading.startLoading()
+            db.collection("users")
             .get()
             .addOnSuccessListener { result ->
                 for(document in result){
@@ -147,10 +152,13 @@ class dashboardFragment : Fragment() {
                                         return
                                     }
                                     for (dc: DocumentChange in value?.documentChanges!!) {
+
                                         if (dc.type == DocumentChange.Type.ADDED) {
                                             engineerDataList.add(dc.document.toObject(ServiceEngineerData::class.java))
 
                                         }
+
+
 
                                     }
 
@@ -164,9 +172,15 @@ class dashboardFragment : Fragment() {
                     }
 
                 }
+                handle.postDelayed({
+                    loading.isDismiss()
+                }, 1000)
             }
 
         } catch (e: IOException) {
+            handle.postDelayed({
+                loading.isDismiss()
+            }, 1000)
             FancyToast.makeText(
                 context,
                 "Error while fetching data from database",
@@ -214,17 +228,4 @@ class dashboardFragment : Fragment() {
         return false
     }
 
-//    private var simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-//        override fun onMove(
-//            recyclerView: RecyclerView,
-//            viewHolder: RecyclerView.ViewHolder,
-//            target: RecyclerView.ViewHolder
-//        ): Boolean {
-//            return true
-//        }
-//
-//        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-////            TODO("Not yet implemented")
-//        }
-//    }
 }

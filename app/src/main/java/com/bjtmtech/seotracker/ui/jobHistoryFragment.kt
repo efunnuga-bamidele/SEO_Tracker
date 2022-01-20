@@ -1,5 +1,6 @@
 package com.bjtmtech.seotracker
 
+import LoadingDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,6 +8,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -29,8 +31,10 @@ import kotlin.collections.ArrayList
 import android.view.MenuInflater
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.text.capitalize
+import com.bjtmtech.seotracker.adapter.MyAdapterCustomerName
 import com.bjtmtech.seotracker.data.ServiceEngineerData
 import com.bjtmtech.seotracker.ui.ViewJobsHistoryFragment
 import kotlinx.android.synthetic.main.activity_register.*
@@ -55,6 +59,12 @@ class jobHistoryFragment : Fragment() {
 
     var userCountry : String ?= null
     var userEmail : String ?= null
+
+    var queryName : String ?= null
+    var queryCountry : String ?= null
+
+    val loading = LoadingDialog(this)
+    val handle = Handler()
 //    lateinit var menuInflator : MenuInflater
 
 
@@ -71,56 +81,42 @@ class jobHistoryFragment : Fragment() {
 //
 ////        return super.onCreateOptionsMenu(menu!!, inflater)
 //    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search_menu, menu)
-        val item = menu?.findItem(R.id.search_action)
-        val searchView = item?.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                TODO("Not yet implemented")
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                searchArrayList.clear()
-                val searchText = newText!!.toLowerCase(Locale.getDefault())
-                if(searchText.isNotEmpty()){
-                    jobsHistoryList.forEach{
-                        if (it.customerName!!.toLowerCase(Locale.getDefault())!!.contains(searchText)){
-                            searchArrayList.add(it)
-                        }
-                    }
-                    myAdapterHistory!!.notifyDataSetChanged()
-                }else {
-
-//                    for (i in jobsHistoryList.indices) {
-//                        jobsHistoryList.removeAt(0)
+//
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.search_menu, menu)
+//        val item = menu?.findItem(R.id.search_action)
+//        val searchView = item?.actionView as SearchView
+//
+//        searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onQueryTextChange(newText: String?): Boolean {
+//                searchArrayList.clear()
+//                val searchText = newText!!.toLowerCase(Locale.getDefault())
+//                if(searchText.isNotEmpty()){
+//                    jobsHistoryList.forEach{
+//                        if (it.customerName!!.toLowerCase(Locale.getDefault())!!.contains(searchText)){
+//                            searchArrayList.add(it)
+//                        }
 //                    }
-                    searchArrayList.clear()
-                    searchArrayList.addAll(jobsHistoryList)
-                    myAdapterHistory!!.notifyDataSetChanged()
-                }
-
-                return false
-            }
-
-        })
-        return super.onCreateOptionsMenu(menu!!, inflater)
-    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.search_action -> FancyToast.makeText(
-//                context,
-//                "Search Clicked",
-//                FancyToast.LENGTH_SHORT,
-//                FancyToast.INFO,
-//                true
-//            ).show()
-////            R.id.refresh -> webView.reload()
-//        }
-//        return true
+//                    myAdapterHistory!!.notifyDataSetChanged()
+//                }else {
+//
+////                    for (i in jobsHistoryList.indices) {
+////                        jobsHistoryList.removeAt(0)
+////                    }
+//                    searchArrayList.clear()
+//                    searchArrayList.addAll(jobsHistoryList)
+//                    myAdapterHistory!!.notifyDataSetChanged()
+//                }
+//
+//                return false
+//            }
+//
+//        })
+//        return super.onCreateOptionsMenu(menu!!, inflater)
 //    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -129,49 +125,43 @@ class jobHistoryFragment : Fragment() {
         sharedPref = context!!.getSharedPreferences("myProfile", PRIVATE_MODE)
 //        create variable to collect the email address
         userEmail = sharedPref.getString("email", "defaultemail@mail.com").toString()
+        loading.startLoading()
 //        setup()
 //
-//        recyclerViewHistory = jhvRecyclerView
-//
-//        recyclerViewHistory.layoutManager = LinearLayoutManager(context)
-//        recyclerViewHistory.setHasFixedSize(true)
-//
-//        jobsHistoryList = arrayListOf()
-//        searchArrayList = arrayListOf()
-////        Toast.makeText(context, jobsHistoryList.toString(), Toast.LENGTH_SHORT).show()
-//
-////        myAdapterHistory = MyJobHistoryAdapter(jobsHistoryList)
-//        myAdapterHistory = MyJobHistoryAdapter(searchArrayList)
-//
-//
-//        recyclerViewHistory.adapter = myAdapterHistory
-//
-//        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener{
-//            override fun onItemClick(position: Int) {
-////                Toast.makeText(context, "You clicked item "+position, Toast.LENGTH_SHORT).show()
-////                ViewJobsHistoryFragment().show(childFragmentManager, "View")
-//                val args = Bundle()
-//                args.putString("key", position.toString())
-//                args.putString("action", "Clicked")
-//                val fm: FragmentManager = activity!!.supportFragmentManager
-//                val overlay = ViewJobsHistoryFragment()
-//                overlay.setArguments(args)
-//                overlay.show(fm, "FragmentDialog")
-//
-//            }
-//
-//        })
-//
-//        EventChangeListener()
-//
-//        //Add Divider
-//        recyclerViewHistory.addItemDecoration(
-//            DividerItemDecoration(
-//                context,
-//                DividerItemDecoration.VERTICAL
-//            )
-//        )
-        EventChangeListener()
+        recyclerViewHistory = jhvRecyclerView
+
+        recyclerViewHistory.layoutManager = LinearLayoutManager(context)
+        recyclerViewHistory.setHasFixedSize(true)
+
+        jobsHistoryList = arrayListOf()
+        searchArrayList = arrayListOf()
+//        Toast.makeText(context, jobsHistoryList.toString(), Toast.LENGTH_SHORT).show()
+
+//        myAdapterHistory = MyJobHistoryAdapter(jobsHistoryList)
+        myAdapterHistory = MyJobHistoryAdapter(searchArrayList)
+
+
+        recyclerViewHistory.adapter = myAdapterHistory
+
+        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener{
+            override fun onItemClick(position: Int) {
+
+            }
+            })
+
+        getEngineerNames()
+
+        //Add Divider
+        recyclerViewHistory.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        handle.postDelayed({
+            loading.isDismiss()
+        }, 1000)
         //        Code to getting country list
 
         val countryNamesList = java.util.ArrayList<String>()
@@ -196,22 +186,33 @@ class jobHistoryFragment : Fragment() {
 //        //get item position on recycler view
 //    val itemTouchHelper = ItemTouchHelper(simpleCallback)
 //    itemTouchHelper.attachToRecyclerView(recyclerViewHistory)
-
-        startDateFilterText.setOnClickListener {
-            FancyToast.makeText(context, "Got Click", FancyToast.LENGTH_SHORT, FancyToast.INFO, true).show()
-            startDateFilterText.setText("I got clicked")
-        }
+//
+//        startDateFilterText.setOnClickListener {
+//            FancyToast.makeText(context, "Got Click", FancyToast.LENGTH_SHORT, FancyToast.INFO, true).show()
+//            startDateFilterText.setText("I got clicked")
+//        }
 
         isOnline(context!!)
 
-        engineerNameCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
-            if (engineerNameCheckBox.isChecked){
-                TODO()
-            }else{
-                TODO()
-            }
-        })
 
+        generateReport.setOnClickListener {
+            loading.isDismiss()
+            if(isOnline(context!!)){
+                queryName = engineerNameText.text.toString()
+                loading.startLoading()
+
+                for (i in jobsHistoryList.indices) {
+
+                    jobsHistoryList.removeAt(0)
+                    searchArrayList.removeAt(0)
+                }
+                myAdapterHistory.notifyDataSetChanged()
+                    if (queryName!!.isNotEmpty()){
+                        getEngineerJobHistory()
+                    }
+            }
+        }
+//
         countryCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (countryCheckBox.isChecked){
                 engineerCountry.isEnabled = true
@@ -225,7 +226,7 @@ class jobHistoryFragment : Fragment() {
                 textInputLayout3.isClickable = false
             }
         })
-
+//
         stopDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (stopDateCheckBox.isChecked){
                 stopDateFilter.isEnabled = true
@@ -239,6 +240,7 @@ class jobHistoryFragment : Fragment() {
                 stopDateFilterText.isClickable = false
             }
         })
+//
         startDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (startDateCheckBox.isChecked){
                 startDateFilterText.isEnabled = true
@@ -255,6 +257,46 @@ class jobHistoryFragment : Fragment() {
 
     }
 
+    private fun getEngineerJobHistory() {
+        try {
+
+            db.collection("createdJobs").orderBy("createdDate", Query.Direction.DESCENDING)
+                .whereEqualTo("engineerName", queryName)
+                .addSnapshotListener(object : EventListener<QuerySnapshot> {
+                    override fun onEvent(
+                        value: QuerySnapshot?,
+                        error: FirebaseFirestoreException?
+                    ) {
+                        if (error != null) {
+                            Log.e("Firebase Error: ", error.message.toString())
+                            return
+                        }
+
+                        for (dc: DocumentChange in value?.documentChanges!!) {
+                            if (dc.type == DocumentChange.Type.ADDED) {
+                                jobsHistoryList.add(dc.document.toObject(JobHistoryData::class.java))
+                                Log.d("Firebase Data ", jobsHistoryList.toString())
+
+                            }
+
+                        }
+                        myAdapterHistory.notifyDataSetChanged()
+                        searchArrayList.addAll(jobsHistoryList)
+                        handle.postDelayed({
+                            loading.isDismiss()
+                        }, 1000)
+                    }
+
+                })
+        }catch (e: IOException){
+            handle.postDelayed({
+                loading.isDismiss()
+            }, 1000)
+            FancyToast.makeText(context, "Error while fetching data from database", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
+        }
+    }
+
+
     private fun setup() {
 
         val settings = firestoreSettings {
@@ -263,7 +305,7 @@ class jobHistoryFragment : Fragment() {
         db.firestoreSettings = settings
     }
 
-    private fun EventChangeListener() {
+    private fun getEngineerNames() {
 
         db.collection("users")
             .get()
@@ -278,13 +320,15 @@ class jobHistoryFragment : Fragment() {
                         ).show()
 
                         db.collection("users")
+
                             .whereEqualTo("country", userCountry)
                             .whereEqualTo("level", "User")
                             .get()
                             .addOnSuccessListener { result ->
                                 val engineerNamesList = java.util.ArrayList<String>()
+                                engineerNamesList.add("")
                                 for (document in result) {
-                                    engineerNamesList.add(document.data["firstName"].toString().capitalize() + " " + document.data["lastName"].toString().capitalize())
+                                    engineerNamesList.add(document.data["firstName"].toString()+ " " + document.data["lastName"].toString())
                                 }
                                 val arrayAdapter = ArrayAdapter(context!!, R.layout.customer_name_dropdown_items, engineerNamesList)
                                 engineerNameText.setAdapter(arrayAdapter)

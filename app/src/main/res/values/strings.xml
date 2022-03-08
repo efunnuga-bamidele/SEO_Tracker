@@ -37,4 +37,11 @@
         <item>ABInbev</item>
     </string-array>
 
+
+    <string name="actions">Get Summary Report</string>
+    <string name="MTD_Report">MTD Report</string>
+    <string name="YTD_Report">YTD Report</string>
+
+
+
 </resources>

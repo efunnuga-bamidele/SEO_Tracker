@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.recyclerview.widget.RecyclerView
@@ -60,6 +61,12 @@ private lateinit var mListener : onItemClickListener
                                                     append(colorMyText("${jobhistory.jobStatus.toString()}",0,"${jobhistory.jobStatus.toString()}".length,
                                                         Color.RED))
         }
+
+
+        holder.jobType.text =   buildSpannedString {
+            bold { append("Job Type: ") }
+            append("${jobhistory.jobType.toString()}")
+        }
 //            "Job Status: "+jobhistory.jobStatus.toString()
         holder.jobCreated.text =    buildSpannedString {
                                                         bold { append("Job Created on: ") }
@@ -79,6 +86,14 @@ private lateinit var mListener : onItemClickListener
 //            "Job Duration: "+ jobhistory.jobDuration.toString()
 
 //        Company [2010.02.11 - 2010.02.19"
+
+        val isVisible : Boolean = jobhistory.visibility
+        holder.constraintLayout.visibility = if (isVisible) View.VISIBLE else View.GONE
+        holder.documentName.setOnClickListener{
+            jobhistory.visibility = !jobhistory.visibility
+            notifyItemChanged(position)
+        }
+
     }
 
     override fun getItemCount(): Int {
@@ -92,8 +107,10 @@ private lateinit var mListener : onItemClickListener
         val engineerName : TextView = itemView.findViewById(R.id.text_view_engineer)
         val jobCountry : TextView = itemView.findViewById(R.id.text_view_country)
         val jobStatus : TextView = itemView.findViewById(R.id.text_view_status)
+        val jobType : TextView = itemView.findViewById(R.id.text_job_type)
         val jobCreated : TextView = itemView.findViewById(R.id.text_view_Created)
         val jobDuration : TextView = itemView.findViewById(R.id.text_view_Durtion)
+        val constraintLayout : ConstraintLayout = itemView.findViewById(R.id.expandableLayout)
 
 
         init {

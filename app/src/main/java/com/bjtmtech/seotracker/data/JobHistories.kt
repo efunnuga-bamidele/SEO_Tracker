@@ -10,6 +10,9 @@ data class JobHistoryData(
     var engineerName: String? = null,
     var jobDuration: String? = null,
     var jobStatus: String? = null,
-    var customerCountry: String? = null
+    var jobType: String? = null,
+    var customerCountry: String? = null,
+    var visibility: Boolean = false
+
 )
 

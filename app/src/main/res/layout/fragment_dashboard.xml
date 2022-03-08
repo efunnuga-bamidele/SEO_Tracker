@@ -25,7 +25,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="Occupancy Preview"
+            android:text="Occupancy Preview YTD"
             android:textColor="@color/purple_700"
             android:textSize="30sp"
             android:textStyle="bold"

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".jobHistoryFragment">
+    tools:context=".jobHistoryFragment"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -239,17 +240,79 @@
 <!--                app:layout_anchorGravity="center" />-->
 <!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="end|bottom"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            android:layout_marginBottom="70dp"-->
+<!--            android:contentDescription=""-->
+<!--            android:src="@android:drawable/ic_menu_agenda"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent" />-->
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_menu_actions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="70dp"
-            android:contentDescription=""
-            android:src="@android:drawable/ic_menu_agenda"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="50dp"
+            android:backgroundTint="@color/purple_200"
+            android:text="@string/actions"
+            app:icon="@drawable/ic_1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_menu_ytd_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/purple_200"
+            android:contentDescription="Menu Alarm"
+            android:visibility="gone"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toTopOf="@+id/fab_menu_actions"
+            app:layout_constraintEnd_toEndOf="@+id/fab_menu_actions"
+            app:srcCompat="@drawable/ic_baseline_ytd_report" />
+
+        <TextView
+            android:id="@+id/fab_menu_ytd_report_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/YTD_Report"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/fab_menu_ytd_report"
+            app:layout_constraintEnd_toStartOf="@+id/fab_menu_ytd_report"
+            app:layout_constraintTop_toTopOf="@+id/fab_menu_ytd_report" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_menu_mtd_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/purple_200"
+            android:contentDescription="Menu Person"
+            android:visibility="gone"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toTopOf="@+id/fab_menu_ytd_report"
+            app:layout_constraintEnd_toEndOf="@+id/fab_menu_ytd_report"
+            app:layout_constraintStart_toStartOf="@+id/fab_menu_ytd_report"
+            app:srcCompat="@drawable/ic_outline_mtd_report" />
+
+        <TextView
+            android:id="@+id/fab_menu_mtd_report_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/MTD_Report"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/fab_menu_mtd_report"
+            app:layout_constraintEnd_toStartOf="@+id/fab_menu_mtd_report"
+            app:layout_constraintTop_toTopOf="@+id/fab_menu_mtd_report" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,11 @@
 package com.bjtmtech.seotracker
 
 import LoadingDialog
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -34,8 +37,11 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.compose.ui.text.capitalize
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import com.bjtmtech.seotracker.adapter.MyAdapterCustomerName
 import com.bjtmtech.seotracker.data.ServiceEngineerData
+import com.bjtmtech.seotracker.databinding.FragmentJobHistoryBinding
 import com.bjtmtech.seotracker.ui.ViewJobsHistoryFragment
 import kotlinx.android.synthetic.main.activity_register.*
 import java.util.*
@@ -43,7 +49,7 @@ import java.util.*
 //import android.widget.SearchView
 
 
-class jobHistoryFragment : Fragment() {
+class jobHistoryFragment : Fragment(), View.OnClickListener {
 
     private var EditUID : Int? = null
     val db = Firebase.firestore
@@ -66,63 +72,29 @@ class jobHistoryFragment : Fragment() {
     val loading = LoadingDialog(this)
     val handle = Handler()
 //    lateinit var menuInflator : MenuInflater
+    private lateinit var binding: FragmentJobHistoryBinding
 
+    var alertDialog: AlertDialog? = null
+
+    private val calendar = Calendar.getInstance()
+    var currentYear:Int = calendar.get(Calendar.YEAR)
+    var currentMonth:Int = calendar.get(Calendar.MONTH) + 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater): Boolean {
-//        inflater.inflate(R.menu.search_menu, menu)
-//
-//        return super.onCreateOptionsMenu(menu, inflater)
-//
-////        return super.onCreateOptionsMenu(menu!!, inflater)
-//    }
-//
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.search_menu, menu)
-//        val item = menu?.findItem(R.id.search_action)
-//        val searchView = item?.actionView as SearchView
-//
-//        searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                searchArrayList.clear()
-//                val searchText = newText!!.toLowerCase(Locale.getDefault())
-//                if(searchText.isNotEmpty()){
-//                    jobsHistoryList.forEach{
-//                        if (it.customerName!!.toLowerCase(Locale.getDefault())!!.contains(searchText)){
-//                            searchArrayList.add(it)
-//                        }
-//                    }
-//                    myAdapterHistory!!.notifyDataSetChanged()
-//                }else {
-//
-////                    for (i in jobsHistoryList.indices) {
-////                        jobsHistoryList.removeAt(0)
-////                    }
-//                    searchArrayList.clear()
-//                    searchArrayList.addAll(jobsHistoryList)
-//                    myAdapterHistory!!.notifyDataSetChanged()
-//                }
-//
-//                return false
-//            }
-//
-//        })
-//        return super.onCreateOptionsMenu(menu!!, inflater)
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding = FragmentJobHistoryBinding.bind(view)
+//        return binding.root
+
+        setupFabButtons()
+
         //        set sharedpreference to get email of user
-        sharedPref = context!!.getSharedPreferences("myProfile", PRIVATE_MODE)
+        sharedPref = requireContext().getSharedPreferences("myProfile", PRIVATE_MODE)
 //        create variable to collect the email address
         userEmail = sharedPref.getString("email", "defaultemail@mail.com").toString()
         loading.startLoading()
@@ -176,28 +148,18 @@ class jobHistoryFragment : Fragment() {
             countryNamesList.add(s)
         }
 
-        val arrayAdapterCountry = ArrayAdapter(context!!,
+        val arrayAdapterCountry = ArrayAdapter(requireContext(),
             R.layout.customer_name_dropdown_items, countryNamesList)
         engineerCountry.setAdapter(arrayAdapterCountry)
 
-//
 
-//
-//        //get item position on recycler view
-//    val itemTouchHelper = ItemTouchHelper(simpleCallback)
-//    itemTouchHelper.attachToRecyclerView(recyclerViewHistory)
-//
-//        startDateFilterText.setOnClickListener {
-//            FancyToast.makeText(context, "Got Click", FancyToast.LENGTH_SHORT, FancyToast.INFO, true).show()
-//            startDateFilterText.setText("I got clicked")
-//        }
-
-        isOnline(context!!)
+        isOnline(requireContext())
 
 
         generateReport.setOnClickListener {
             loading.isDismiss()
-            if(isOnline(context!!)){
+
+            if(isOnline(requireContext())){
                 queryName = engineerNameText.text.toString()
                 loading.startLoading()
 
@@ -254,14 +216,63 @@ class jobHistoryFragment : Fragment() {
                 startDateFilter.isClickable = false
             }
         })
-
+        createDialog()
     }
+
+    private fun setupFabButtons() {
+        binding.fabMenuActions.shrink()
+        binding.fabMenuActions.setOnClickListener(this)
+        binding.fabMenuYtdReport.setOnClickListener(this)
+        binding.fabMenuMtdReport.setOnClickListener(this)
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.fab_menu_actions -> {
+                expandOrCollapseFAB()
+            }
+            R.id.fab_menu_ytd_report -> {
+                showToast("Show user summary ytd report")
+                alertDialog?.show()
+//                showDialog()
+            }
+            R.id.fab_menu_mtd_report -> {
+                showToast("Show user summary mtd report\"")
+                alertDialog?.show()
+            }
+        }
+    }
+
+
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun expandOrCollapseFAB() {
+        if (binding.fabMenuActions.isExtended) {
+            binding.fabMenuActions.shrink()
+            binding.fabMenuYtdReport.hide()
+            binding.fabMenuYtdReportText.visibility = View.GONE
+            binding.fabMenuMtdReport.hide()
+            binding.fabMenuMtdReportText.visibility = View.GONE
+        } else {
+            binding.fabMenuActions.extend()
+            binding.fabMenuYtdReport.show()
+            binding.fabMenuYtdReportText.visibility = View.VISIBLE
+            binding.fabMenuMtdReport.show()
+            binding.fabMenuMtdReportText.visibility = View.VISIBLE
+        }
+    }
+
 
     private fun getEngineerJobHistory() {
         try {
-
+//            FancyToast.makeText(context, "Month: "+currentMonth+" Year:"+currentYear, FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
             db.collection("createdJobs").orderBy("createdDate", Query.Direction.DESCENDING)
                 .whereEqualTo("engineerName", queryName)
+//                .whereEqualTo("createdYear", currentYear.toString())
+//                .whereEqualTo("createdMonth", "1")
+//                .whereGreaterThanOrEqualTo("startDate", "02.28.2022")
                 .addSnapshotListener(object : EventListener<QuerySnapshot> {
                     override fun onEvent(
                         value: QuerySnapshot?,
@@ -297,14 +308,6 @@ class jobHistoryFragment : Fragment() {
     }
 
 
-    private fun setup() {
-
-        val settings = firestoreSettings {
-            isPersistenceEnabled = true
-        }
-        db.firestoreSettings = settings
-    }
-
     private fun getEngineerNames() {
 
         db.collection("users")
@@ -318,7 +321,7 @@ class jobHistoryFragment : Fragment() {
                             FancyToast.LENGTH_SHORT, FancyToast.INFO,
                             true
                         ).show()
-
+                        engineerCountry.setText(userCountry.toString())
                         db.collection("users")
 
                             .whereEqualTo("country", userCountry)
@@ -330,7 +333,7 @@ class jobHistoryFragment : Fragment() {
                                 for (document in result) {
                                     engineerNamesList.add(document.data["firstName"].toString()+ " " + document.data["lastName"].toString())
                                 }
-                                val arrayAdapter = ArrayAdapter(context!!, R.layout.customer_name_dropdown_items, engineerNamesList)
+                                val arrayAdapter = ArrayAdapter(requireContext(), R.layout.customer_name_dropdown_items, engineerNamesList)
                                 engineerNameText.setAdapter(arrayAdapter)
                             }
                             .addOnFailureListener { exception ->
@@ -412,8 +415,45 @@ class jobHistoryFragment : Fragment() {
     }
 
 //
-//    override fun onDestroy() {
-//        super.onDestroy()
-//    }
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
+    fun createDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder.setTitle("SUMMARY REPORT")
+        alertDialogBuilder.setMessage(buildSpannedString {
+            bold { "" +
+                "-------------------------------------------------\n" +
+                "-----------Yet To Date Summary Reports-----------\n" +
+                "-------------------------------------------------\n" +
+                "~Engineers Name:  Service Engineer\n" +
+                "~Report Date:  00 - 00 - 0000\n" +
+                "~Date Range: January to November\n" +
+                "-------------------------------------------------\n" +
+                "~Site Visited: \t20 \n" +
+                "~Total Worked Days: \t120 \n" +
+                "~Total Open Jobs: \t1 \n" +
+                "~Total Completed Jobs: \t14 \n" +
+                "~Total Pending Jobs: \t3 \n" +
+                "~Total Canceled Jobs: \t2 \n" +
+                "-------------------------------------------------\n"+
+                    ""
+                }
+//        alertDialogBuilder.setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+//            try {
+//
+//            }catch (e:Exception){
+//
+//            }
+//        }
+        alertDialogBuilder.setNegativeButton("Close", { dialogInterface: DialogInterface, i: Int ->
+//            Toast.makeText(context, "Action Canceled", Toast.LENGTH_SHORT).show()
+        })
+
+        alertDialog = alertDialogBuilder.create()
+    })
+
+
+}
 }

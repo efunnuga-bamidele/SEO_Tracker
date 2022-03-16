@@ -35,6 +35,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!--Main wite box-->
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dbRecyclerView"
             android:layout_width="match_parent"
@@ -45,9 +46,10 @@
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textLogo"
+            app:layout_constraintVertical_bias="1.0"
             tools:ignore="SpeakableTextPresentCheck"
             tools:listitem="@layout/dashboard_items" />
 

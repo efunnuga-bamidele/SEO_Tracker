@@ -2,7 +2,7 @@ package com.bjtmtech.seotracker
 
 import LoadingDialog
 import android.app.AlertDialog
-import android.app.Dialog
+import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
@@ -13,7 +13,15 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.Toast
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -22,29 +30,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bjtmtech.seotracker.adapter.MyJobHistoryAdapter
 import com.bjtmtech.seotracker.data.JobHistoryData
-import com.google.firebase.firestore.*
+import com.bjtmtech.seotracker.databinding.FragmentJobHistoryBinding
+import com.bjtmtech.seotracker.ui.ViewJobsHistoryFragment
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.shashank.sony.fancytoastlib.FancyToast
 import kotlinx.android.synthetic.main.fragment_job_history.*
 import java.io.IOException
-import kotlin.collections.ArrayList
-import android.view.MenuInflater
-import android.widget.ArrayAdapter
-import android.widget.CompoundButton
-import android.widget.Toast
-import androidx.appcompat.widget.SearchView
-import androidx.compose.ui.text.capitalize
-import androidx.core.text.bold
-import androidx.core.text.buildSpannedString
-import com.bjtmtech.seotracker.adapter.MyAdapterCustomerName
-import com.bjtmtech.seotracker.data.ServiceEngineerData
-import com.bjtmtech.seotracker.databinding.FragmentJobHistoryBinding
-import com.bjtmtech.seotracker.ui.ViewJobsHistoryFragment
-import kotlinx.android.synthetic.main.activity_register.*
+import java.text.SimpleDateFormat
 import java.util.*
+
 
 //import android.widget.SearchView
 
@@ -74,14 +76,37 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
 //    lateinit var menuInflator : MenuInflater
     private lateinit var binding: FragmentJobHistoryBinding
 
-    var alertDialog: AlertDialog? = null
+    var alertDialogMTD: AlertDialog? = null
+    var alertDialogYTD: AlertDialog? = null
 
     private val calendar = Calendar.getInstance()
     var currentYear:Int = calendar.get(Calendar.YEAR)
     var currentMonth:Int = calendar.get(Calendar.MONTH) + 1
+    var currentDay:Int = calendar.get(Calendar.DAY_OF_MONTH)
+
+    var customerVisitedMTD:Int ?= 0
+    var jobCompletedMTD:Int ?= 0
+    var openJobsMTD:Int ?= 0
+    var canceledJobsMTD:Int ?= 0
+    var pendingJobsMTD:Int ? =0
+    var jobDurationMTD:Int ? =0
+    var openJobDurationMTD:Int ? =0
+    var dateRange:String ? = null
+    var yearRange:String ? = null
+
+
+    var customerVisitedYTD:Int ?= 0
+    var jobCompletedYTD:Int ?= 0
+    var openJobsYTD:Int ?= 0
+    var canceledJobsYTD:Int ?= 0
+    var pendingJobsYTD:Int ? =0
+    var jobDurationYTD:Int ? =0
+    var openJobDurationYTD:Int ? =0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
     }
 
@@ -115,11 +140,11 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
 
         recyclerViewHistory.adapter = myAdapterHistory
 
-        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener{
+        myAdapterHistory.setOnItemClickListener(object : MyJobHistoryAdapter.onItemClickListener {
             override fun onItemClick(position: Int) {
 
             }
-            })
+        })
 
         getEngineerNames()
 
@@ -148,8 +173,10 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
             countryNamesList.add(s)
         }
 
-        val arrayAdapterCountry = ArrayAdapter(requireContext(),
-            R.layout.customer_name_dropdown_items, countryNamesList)
+        val arrayAdapterCountry = ArrayAdapter(
+            requireContext(),
+            R.layout.customer_name_dropdown_items, countryNamesList
+        )
         engineerCountry.setAdapter(arrayAdapterCountry)
 
 
@@ -159,21 +186,67 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
         generateReport.setOnClickListener {
             loading.isDismiss()
 
-            if(isOnline(requireContext())){
+            if (isOnline(requireContext())) {
                 queryName = engineerNameText.text.toString()
                 loading.startLoading()
+//If only name search is executed
+                if (queryName!!.isNotEmpty() && startDateCheckBox.isChecked == false  && stopDateCheckBox.isChecked == false  && countryCheckBox.isChecked == false ) {
 
-                for (i in jobsHistoryList.indices) {
+                    for (i in jobsHistoryList.indices) {
 
-                    jobsHistoryList.removeAt(0)
-                    searchArrayList.removeAt(0)
-                }
-                myAdapterHistory.notifyDataSetChanged()
-                    if (queryName!!.isNotEmpty()){
-                        getEngineerJobHistory()
+                        jobsHistoryList.removeAt(0)
+                        searchArrayList.removeAt(0)
+                        myAdapterHistory.notifyDataSetChanged()
                     }
+
+                    getEngineerJobHistory()
+//                        myAdapterHistory.notifyDataSetChanged()
+                } else if(queryName!!.isNotEmpty() && startDateCheckBox.isChecked && stopDateCheckBox.isChecked == false && countryCheckBox.isChecked  == false) {
+                    FancyToast.makeText(
+                        context, "Error, Stop date not enabled",
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.ERROR, true
+                    )
+                        .show()
+
+                } else if(queryName!!.isNotEmpty() && startDateCheckBox.isChecked  == false && stopDateCheckBox.isChecked && countryCheckBox.isChecked  == false) {
+                    FancyToast.makeText(
+                        context, "Error, Start date not enabled",
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.ERROR, true
+                    )
+                        .show()
+
+                } else if(queryName!!.isNotEmpty() && startDateCheckBox.isChecked && stopDateCheckBox.isChecked && countryCheckBox.isChecked == false) {
+                    if(startDateFilterText.text!!.isNotEmpty() && stopDateFilterText.text!!.isEmpty()){
+                        FancyToast.makeText(
+                            context, "Error, stopDateFilterText is empty",
+                            FancyToast.LENGTH_SHORT,
+                            FancyToast.ERROR, true
+                        )
+                            .show()
+
+                    }else if(startDateFilterText.text!!.isEmpty() && stopDateFilterText.text!!.isEmpty()){
+
+
+                    }else if(startDateFilterText.text!!.isNotEmpty() && stopDateFilterText.text!!.isNotEmpty()){
+                        getEngineerJobHistoryByRange()
+                    }
+
+                }
+                else {
+
+                    FancyToast.makeText(
+                        context, "Error while fetching data from database",
+                        FancyToast.LENGTH_SHORT,
+                        FancyToast.ERROR, true
+                    )
+                        .show()
+
+                }
             }
         }
+
 //
         countryCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (countryCheckBox.isChecked){
@@ -188,6 +261,33 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 textInputLayout3.isClickable = false
             }
         })
+//Text field date format
+        fun EditText.transformIntoDatePicker(context: Context, format: String, maxDate: Date? = null) {
+            isFocusableInTouchMode = false
+            isClickable = true
+            isFocusable = false
+
+            val myCalendar = Calendar.getInstance()
+            val datePickerOnDataSetListener =
+                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                    myCalendar.set(Calendar.YEAR, year)
+                    myCalendar.set(Calendar.MONTH, monthOfYear)
+                    myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    val sdf = SimpleDateFormat(format, Locale.UK)
+                    setText(sdf.format(myCalendar.time))
+                }
+
+            setOnClickListener {
+                DatePickerDialog(
+                    context, datePickerOnDataSetListener, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)
+                ).run {
+                    maxDate?.time?.also { datePicker.maxDate = it }
+                    show()
+                }
+            }
+        }
 //
         stopDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (stopDateCheckBox.isChecked){
@@ -195,6 +295,8 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 stopDateFilterText.isEnabled = true
                 stopDateFilter.isClickable = true
                 stopDateFilterText.isClickable = true
+                stopDateFilterText.transformIntoDatePicker(requireContext(), "MM.dd.yyyy", Date())
+
             }else{
                 stopDateFilter.isEnabled = false
                 stopDateFilterText.isEnabled = false
@@ -202,6 +304,7 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 stopDateFilterText.isClickable = false
             }
         })
+
 //
         startDateCheckBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
             if (startDateCheckBox.isChecked){
@@ -209,6 +312,7 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 startDateFilter.isEnabled = true
                 startDateFilterText.isClickable = true
                 startDateFilter.isClickable = true
+                startDateFilterText.transformIntoDatePicker(requireContext(), "MM.dd.yyyy", Date())
             }else{
                 startDateFilterText.isEnabled = false
                 startDateFilter.isEnabled = false
@@ -216,7 +320,7 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 startDateFilter.isClickable = false
             }
         })
-        createDialog()
+
     }
 
     private fun setupFabButtons() {
@@ -232,13 +336,16 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
                 expandOrCollapseFAB()
             }
             R.id.fab_menu_ytd_report -> {
-                showToast("Show user summary ytd report")
-                alertDialog?.show()
+//                showToast("Show user summary ytd report")
+
+                createDialogYTD()
+                alertDialogYTD?.show()
 //                showDialog()
             }
             R.id.fab_menu_mtd_report -> {
-                showToast("Show user summary mtd report\"")
-                alertDialog?.show()
+//                showToast("Show user summary mtd report\"")
+                createDialogMTD()
+                alertDialogMTD?.show()
             }
         }
     }
@@ -265,46 +372,268 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
     }
 
 
-    private fun getEngineerJobHistory() {
-        try {
-//            FancyToast.makeText(context, "Month: "+currentMonth+" Year:"+currentYear, FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
-            db.collection("createdJobs").orderBy("createdDate", Query.Direction.DESCENDING)
-                .whereEqualTo("engineerName", queryName)
-//                .whereEqualTo("createdYear", currentYear.toString())
-//                .whereEqualTo("createdMonth", "1")
-//                .whereGreaterThanOrEqualTo("startDate", "02.28.2022")
-                .addSnapshotListener(object : EventListener<QuerySnapshot> {
-                    override fun onEvent(
-                        value: QuerySnapshot?,
-                        error: FirebaseFirestoreException?
-                    ) {
-                        if (error != null) {
-                            Log.e("Firebase Error: ", error.message.toString())
-                            return
-                        }
+    fun purgeValues(){
+        customerVisitedMTD= 0
+        jobCompletedMTD= 0
+        openJobsMTD= 0
+        canceledJobsMTD= 0
+        pendingJobsMTD =0
+        jobDurationMTD =0
+        openJobDurationMTD =0
 
-                        for (dc: DocumentChange in value?.documentChanges!!) {
-                            if (dc.type == DocumentChange.Type.ADDED) {
-                                jobsHistoryList.add(dc.document.toObject(JobHistoryData::class.java))
-                                Log.d("Firebase Data ", jobsHistoryList.toString())
+
+        customerVisitedYTD= 0
+        jobCompletedYTD= 0
+        openJobsYTD= 0
+        canceledJobsYTD= 0
+        pendingJobsYTD =0
+        jobDurationYTD=0
+        openJobDurationYTD =0
+    }
+
+    
+    private fun getEngineerJobHistory() {
+        db.clearPersistence()
+        val jobStatus = mutableListOf<String>("COMPLETED", "ACTIVE", "PENDING", "CANCELED")
+        var currentMonthDate ="0"+(currentMonth).toString()
+        purgeValues()
+
+   try {
+
+            db.collection("createdJobs")
+                .whereEqualTo("engineerName", queryName)
+                .whereIn("jobStatus",jobStatus)
+                .addSnapshotListener { snapshots, e ->
+                    if (e != null) {
+                        Log.w(TAG, "listen:error", e)
+                        return@addSnapshotListener
+                    }
+                    searchArrayList.clear()
+                    jobsHistoryList.clear()
+                    for (dc in snapshots!!.documentChanges) {
+
+                        //INFORMATION EXTRACTION WITHOUT FILTER FUll Year
+                        if(dc.document.data["jobStatus"].toString() == "COMPLETED"){
+                            jobCompletedYTD = jobCompletedYTD?.inc()
+                            val durationYTD = dc.document.data["jobDuration"]
+                            jobDurationYTD = jobDurationYTD?.plus(durationYTD.toString().toInt())
+
+                        }else if(dc.document.data["jobStatus"].toString() == "ACTIVE"){
+                            openJobsYTD = openJobsYTD?.inc()
+                            val durationOpenYTD = dc.document.data["jobDuration"]
+                            openJobDurationYTD = openJobDurationYTD?.plus(durationOpenYTD.toString().toInt())
+
+
+                        }else if(dc.document.data["jobStatus"].toString() == "CANCELED"){
+                            canceledJobsYTD = canceledJobsYTD?.inc()
+
+                        }else if(dc.document.data["jobStatus"].toString() == "PENDING"){
+                            pendingJobsYTD = pendingJobsYTD?.inc()
+
+                        }
+                        customerVisitedYTD = snapshots.size() //Get length of result
+
+                        //Current Date Filter Session
+                        val str = dc.document.data["startDate"].toString()
+                        val delim = "."
+                        val list = str.split(delim)
+                        if(list[0] == currentMonthDate && list[2].toInt() > currentYear-1 && list[2].toInt() < currentYear+1){
+
+                            Log.d(TAG, "Jobs: ${dc.document.data["startDate"]}")
+                            jobsHistoryList.add(dc.document.toObject(JobHistoryData::class.java))
+                            //Information Extraction with filter
+                            customerVisitedMTD = customerVisitedMTD?.inc()
+                            if(dc.document.data["jobStatus"].toString() == "COMPLETED"){
+                                jobCompletedMTD = jobCompletedMTD?.inc()
+                                val duration = dc.document.data["jobDuration"]
+                                jobDurationMTD = jobDurationMTD?.plus(duration.toString().toInt())
+
+                            }else if(dc.document.data["jobStatus"].toString() == "ACTIVE"){
+                                openJobsMTD = openJobsMTD?.inc()
+                                val durationOpen = dc.document.data["jobDuration"]
+                                openJobDurationMTD = openJobDurationMTD?.plus(durationOpen.toString().toInt())
+
+                            }else if(dc.document.data["jobStatus"].toString() == "CANCELED"){
+                                canceledJobsMTD = canceledJobsMTD?.inc()
+
+                            }else if(dc.document.data["jobStatus"].toString() == "PENDING"){
+                                pendingJobsMTD = pendingJobsMTD?.inc()
 
                             }
 
                         }
-                        myAdapterHistory.notifyDataSetChanged()
-                        searchArrayList.addAll(jobsHistoryList)
-                        handle.postDelayed({
-                            loading.isDismiss()
-                        }, 1000)
                     }
+                    myAdapterHistory.notifyDataSetChanged()
+                    searchArrayList.addAll(jobsHistoryList)
+                    handle.postDelayed({
+                        loading.isDismiss()
+                    }, 1000)
+                }
+       dateRange = currentMonthDate +" / "+currentYear
+       yearRange = currentYear.toString()
 
-                })
         }catch (e: IOException){
             handle.postDelayed({
                 loading.isDismiss()
             }, 1000)
             FancyToast.makeText(context, "Error while fetching data from database", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
         }
+    }
+
+
+    private fun getEngineerJobHistoryByRange() {
+        db.clearPersistence()
+        val jobStatus = mutableListOf<String>("COMPLETED", "ACTIVE", "PENDING", "CANCELED")
+        var beginDateRange = startDateFilterText.text.toString()
+        val beginDateRangeList = beginDateRange.split(".")
+        var endDateRange = stopDateFilterText.text.toString()
+        val endDateRangeList = endDateRange.split(".")
+        purgeValues()
+
+        try {
+
+            db.collection("createdJobs")
+                .whereEqualTo("engineerName", queryName)
+                .whereIn("jobStatus",jobStatus)
+                .addSnapshotListener { snapshots, e ->
+                    if (e != null) {
+                        Log.w(TAG, "listen:error", e)
+                        return@addSnapshotListener
+                    }
+                    searchArrayList.clear()
+                    jobsHistoryList.clear()
+                    for (dc in snapshots!!.documentChanges) {
+
+                        //INFORMATION EXTRACTION WITHOUT FILTER FUll Year
+                        if(dc.document.data["jobStatus"].toString() == "COMPLETED"){
+                            jobCompletedYTD = jobCompletedYTD?.inc()
+                            val durationYTD = dc.document.data["jobDuration"]
+                            jobDurationYTD = jobDurationYTD?.plus(durationYTD.toString().toInt())
+
+                        }else if(dc.document.data["jobStatus"].toString() == "ACTIVE"){
+                            openJobsYTD = openJobsYTD?.inc()
+                            val durationOpenYTD = dc.document.data["jobDuration"]
+                            openJobDurationYTD = openJobDurationYTD?.plus(durationOpenYTD.toString().toInt())
+
+
+                        }else if(dc.document.data["jobStatus"].toString() == "CANCELED"){
+                            canceledJobsYTD = canceledJobsYTD?.inc()
+
+                        }else if(dc.document.data["jobStatus"].toString() == "PENDING"){
+                            pendingJobsYTD = pendingJobsYTD?.inc()
+
+                        }
+                        customerVisitedYTD = snapshots.size() //Get length of result
+                        //-------------------------------------------------------------------//
+                        val str = dc.document.data["startDate"].toString()
+                        val delim = "."
+                        val list = str.split(delim)
+                        if(list[0] >= beginDateRangeList[0] && list[0] <= endDateRangeList[0]
+                            && list[1] >= beginDateRangeList[1]
+//                             list[1] <= endDateRangeList[1]
+                            && list[2] >= beginDateRangeList[2] && list[2] <= endDateRangeList[2]){
+                            Log.d(TAG, "Jobs: ${dc.document.data["startDate"]}")
+                            jobsHistoryList.add(dc.document.toObject(JobHistoryData::class.java))
+                            //Information Extraction with filter
+                            customerVisitedMTD = customerVisitedMTD?.inc()
+                            if(dc.document.data["jobStatus"].toString() == "COMPLETED"){
+                                jobCompletedMTD = jobCompletedMTD?.inc()
+                                val duration = dc.document.data["jobDuration"]
+                                jobDurationMTD = jobDurationMTD?.plus(duration.toString().toInt())
+
+                            }else if(dc.document.data["jobStatus"].toString() == "ACTIVE"){
+                                openJobsMTD = openJobsMTD?.inc()
+                                val durationOpen = dc.document.data["jobDuration"]
+                                openJobDurationMTD = openJobDurationMTD?.plus(durationOpen.toString().toInt())
+
+                            }else if(dc.document.data["jobStatus"].toString() == "CANCELED"){
+                                canceledJobsMTD = canceledJobsMTD?.inc()
+
+                            }else if(dc.document.data["jobStatus"].toString() == "PENDING"){
+                                pendingJobsMTD = pendingJobsMTD?.inc()
+
+                            }
+                        }
+                        dateRange = startDateFilterText.text.toString() +" - "+ stopDateFilterText.text.toString()
+                        yearRange = beginDateRangeList[2].toString() +" - "+endDateRangeList[2].toString()
+                    }
+                    myAdapterHistory.notifyDataSetChanged()
+                    searchArrayList.addAll(jobsHistoryList)
+                    handle.postDelayed({
+                        loading.isDismiss()
+                    }, 1000)
+                }
+
+
+        }catch (e: IOException){
+            handle.postDelayed({
+                loading.isDismiss()
+            }, 1000)
+            FancyToast.makeText(context, "Error while fetching data from database", FancyToast.LENGTH_SHORT, FancyToast.ERROR, true).show()
+        }
+    }
+
+fun createReport(){
+
+}
+
+    fun createDialogMTD() {
+//        showToast(""+queryName.toString())
+        val alertDialogBuilderMTD = AlertDialog.Builder(context)
+        alertDialogBuilderMTD.setTitle("SUMMARY REPORT")
+        alertDialogBuilderMTD.setMessage(""+
+                "\n" +
+                "Month To Date Summary Reports\n"+
+                "\n" +
+                "~Engineers Name: "+queryName.toString()+"\n" +
+                "~Report Date:  "+currentMonth+" - "+currentDay+" - "+currentYear+"\n" +
+                "~Date Range: "+dateRange+"\n" +
+                "\n" +
+                "~Site Visited: \t "+customerVisitedMTD.toString()+" \n" +
+                "~Total Worked Days: \t "+jobDurationMTD.toString()+" \n" +
+                "~Total Open Jobs: \t "+openJobsMTD.toString()+" \n" +
+                "~Total Open Job Days: \t "+openJobDurationMTD.toString()+" \n" +
+                "~Total Completed Jobs: \t "+jobCompletedMTD.toString()+" \n" +
+                "~Total Pending Jobs: \t "+pendingJobsMTD.toString()+" \n" +
+                "~Total Canceled Jobs: \t "+canceledJobsMTD.toString()+" \n" +
+                "\n" +
+                ""
+        )
+        alertDialogBuilderMTD.setNegativeButton("Close", { dialogInterface: DialogInterface, i: Int ->
+            }
+        )
+
+        alertDialogMTD = alertDialogBuilderMTD.create()
+    }
+
+
+    fun createDialogYTD() {
+        val alertDialogBuilderYTD = AlertDialog.Builder(context)
+        alertDialogBuilderYTD.setTitle("SUMMARY REPORT")
+        alertDialogBuilderYTD.setMessage(""+
+                "\n" +
+                "Month To Date Summary Reports\n"+
+                "\n" +
+                "~Engineers Name: "+queryName.toString()+"\n" +
+                "~Report Date:  "+currentMonth+" - "+currentDay+" - "+currentYear+"\n" +
+                "~Date Range: "+yearRange+"\n" +
+                "\n" +
+                "~Site Visited: \t "+customerVisitedYTD.toString()+" \n" +
+                "~Total Worked Days: \t "+jobDurationYTD.toString()+" \n" +
+                "~Total Open Jobs: \t "+openJobsYTD.toString()+" \n" +
+                "~Total Open Job Days: \t "+openJobDurationYTD.toString()+" \n" +
+                "~Total Completed Jobs: \t "+jobCompletedYTD.toString()+" \n" +
+                "~Total Pending Jobs: \t "+pendingJobsYTD.toString()+" \n" +
+                "~Total Canceled Jobs: \t "+canceledJobsYTD.toString()+" \n" +
+                "\n" +
+                ""
+        )
+        alertDialogBuilderYTD.setNegativeButton("Close", { dialogInterface: DialogInterface, i: Int ->
+//            Toast.makeText(context, "Action Canceled", Toast.LENGTH_SHORT).show()
+        }
+        )
+
+        alertDialogYTD = alertDialogBuilderYTD.create()
     }
 
 
@@ -419,41 +748,7 @@ class jobHistoryFragment : Fragment(), View.OnClickListener {
         super.onDestroy()
     }
 
-    fun createDialog() {
-        val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder.setTitle("SUMMARY REPORT")
-        alertDialogBuilder.setMessage(buildSpannedString {
-            bold { "" +
-                "-------------------------------------------------\n" +
-                "-----------Yet To Date Summary Reports-----------\n" +
-                "-------------------------------------------------\n" +
-                "~Engineers Name:  Service Engineer\n" +
-                "~Report Date:  00 - 00 - 0000\n" +
-                "~Date Range: January to November\n" +
-                "-------------------------------------------------\n" +
-                "~Site Visited: \t20 \n" +
-                "~Total Worked Days: \t120 \n" +
-                "~Total Open Jobs: \t1 \n" +
-                "~Total Completed Jobs: \t14 \n" +
-                "~Total Pending Jobs: \t3 \n" +
-                "~Total Canceled Jobs: \t2 \n" +
-                "-------------------------------------------------\n"+
-                    ""
-                }
-//        alertDialogBuilder.setPositiveButton("Yes") { _: DialogInterface, _: Int ->
-//            try {
-//
-//            }catch (e:Exception){
-//
-//            }
-//        }
-        alertDialogBuilder.setNegativeButton("Close", { dialogInterface: DialogInterface, i: Int ->
-//            Toast.makeText(context, "Action Canceled", Toast.LENGTH_SHORT).show()
-        })
-
-        alertDialog = alertDialogBuilder.create()
-    })
 
 
 }
-}
+

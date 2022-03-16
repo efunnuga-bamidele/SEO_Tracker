@@ -22,6 +22,7 @@ import com.bjtmtech.seotracker.customersFragment
 import com.bjtmtech.seotracker.jobHistoryFragment
 import com.bjtmtech.seotracker.jobtypeFragment
 import com.google.firebase.firestore.ktx.firestore
+import com.shashank.sony.fancytoastlib.FancyToast
 import java.util.*
 
 
@@ -55,28 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         checkUserLevel()
-        replaceFragment(dashboardFragment(), "Dashboard")
-//            replaceFragment(jobHistoryFragment(), "Dashboard")
-        navView.setCheckedItem(R.id.nav_dashboard)
 
-        navView.setNavigationItemSelectedListener {
-
-            it.isChecked = true  //to highlight the item
-            when (it.itemId) {
-
-                R.id.nav_dashboard -> replaceFragment(dashboardFragment(), it.title.toString())
-//                R.id.nav_create_job -> replaceFragment(createJobFragment(), it.title.toString())
-//                R.id.nav_view_active_job -> replaceFragment(activeJobFragment(), it.title.toString())
-
-                R.id.nav_jobHistory -> replaceFragment(jobHistoryFragment(), it.title.toString())
-                R.id.nav_jobType -> replaceFragment(jobtypeFragment(), it.title.toString())
-//                R.id.nav_language -> replaceFragment(languageFragment(), it.title.toString())
-                R.id.nav_customers -> replaceFragment(customersFragment(), it.title.toString())
-                R.id.nav_profile -> replaceFragment(profileFragment(), it.title.toString())
-                R.id.nav_logout -> signout()
-            }
-            true
-        }
 
 
 
@@ -92,9 +72,37 @@ class MainActivity : AppCompatActivity() {
                     if(document.data["email"] == userDetail){
 //                        Toast.makeText(this, document.data["level"].toString(), Toast.LENGTH_SHORT).show()
                         if (document.data["level"].toString() == "Admin"){
+                            replaceFragment(dashboardFragment(), "Dashboard")
+//            replaceFragment(jobHistoryFragment(), "Dashboard")
+                            navView.setCheckedItem(R.id.nav_dashboard)
 
+                            navView.setNavigationItemSelectedListener {
+
+                                it.isChecked = true  //to highlight the item
+                                when (it.itemId) {
+
+                                    R.id.nav_dashboard -> replaceFragment(dashboardFragment(), it.title.toString())
+//                R.id.nav_create_job -> replaceFragment(createJobFragment(), it.title.toString())
+//                R.id.nav_view_active_job -> replaceFragment(activeJobFragment(), it.title.toString())
+
+                                    R.id.nav_jobHistory -> replaceFragment(jobHistoryFragment(), it.title.toString())
+                                    R.id.nav_jobType -> replaceFragment(jobtypeFragment(), it.title.toString())
+//                R.id.nav_language -> replaceFragment(languageFragment(), it.title.toString())
+                                    R.id.nav_customers -> replaceFragment(customersFragment(), it.title.toString())
+                                    R.id.nav_profile -> replaceFragment(profileFragment(), it.title.toString())
+                                    R.id.nav_logout -> signout()
+                                }
+                                true
+                            }
                         }else{
-
+                            signout()
+                            FancyToast.makeText(
+                                this,
+                                "Error user not an administrator!",
+                                FancyToast.LENGTH_SHORT,
+                                FancyToast.ERROR,
+                                true
+                            ).show()
                         }
                         break
                     }
@@ -134,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         if (toggle.onOptionsItemSelected(item)) {
             getExtras()
-            checkUserLevel()
+//            checkUserLevel()
             return true
         }
 
